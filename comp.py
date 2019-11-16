@@ -56,23 +56,25 @@ class Card:
             self.colour = black
         else:
             self.colour = white
-    def __repr__(self):
-        return str(self.number)
+
     def display(self,left,top):
         self.left = left
         self.top = top
         self.image = pygame.draw.rect(screen,self.colour,(left,top,cardWidth,cardHeight),0)
-        Text(str(self.ppValue),60,grey,self.colour,(left,top)).display()
+        Text(str(self.ppValue), 60, grey, self.colour, (left, top)).display()
 
 def deal(some_players):
-    n = len(some_players)
+    num_players = len(some_players)
+    num_hands = num_players * 2 if num_players == 2 else num_players
     random.shuffle(deck)
-    for i in range(0,n):
-        some_players[i].hand = sorted(deck[int(i*(52/n)):int((i+1)*(52/n))],key=lambda card: card.number)
+    for i in range(0, num_players):
+        some_players[i].hand = sorted(deck[int(i*(52/num_hands)):int((i+1)*(52/num_hands))], key=lambda card: card.number)
 
 def who_starts(some_players):
+    lowest_card_numbers = [player.hand[0].number for player in some_players]
+    min_card = min(lowest_card_numbers)
     for p in some_players:
-        if any(card.number == 0 for card in p.hand):
+        if any(card.number == min_card for card in p.hand):
             return p
 
 def choose_cards(hand):
@@ -221,17 +223,21 @@ def repaint(player,cards):
     #Text(str(len(player.next_player(players).hand)), 30, purple, grey, (width/8, 0)).display()
     display_cards(cards,width/2 - 2.5*cardWidth,height/2 - 0.5*cardHeight)
     
-def turn(player,cards):
+def turn(player, last_played_cards):
     while True:
-        repaint(player,cards)
-        display_cards(player.hand,width/32,(6*height)/7)
+        repaint(player, last_played_cards)
+        display_cards(player.hand, width/32, (6*height)/7)
         if player in computers:
             time.sleep(3)
-            finalCards=computer(cards,player.hand, player)
+            candidateCards = player.computer.choose_cards(last_played_cards, player.hand)
+            if play(candidateCards, player.hand, last_played_cards) == 0:
+                finalCards = candidateCards
+                for card in finalCards:
+                    player.hand.remove(card)
             break
         else:
             candidateCards = choose_cards(player.hand)
-            if play(candidateCards,player.hand,cards) == 0:               
+            if play(candidateCards, player.hand, last_played_cards) == 0:
                 finalCards = candidateCards
                 break           
             for card in candidateCards:
@@ -239,9 +245,9 @@ def turn(player,cards):
             player.hand.sort(key=lambda card: card.number)
     return finalCards
 
-def display_cards(cards,left,top):
+def display_cards(cards, left, top):
     n = len(cards)
-    for i in range(0,n):
+    for i in range(0, n):
         cards[i].display(left + (i*cardWidth), top)
     pygame.display.update()
 
@@ -251,32 +257,30 @@ def error(message):
 #    pygame.display.update()
 ##    time.sleep(5)
 
-def computer(lastCards,hand,player):
-    n = len(hand)
-    l = len(lastCards)
-    selectedCards=[]
-    if l == 0:
-        selectedCards.append(hand[0])
-        hand.remove(hand[0])
-        return selectedCards
-    elif l > 3:
-        return selectedCards
-    else:
-        for i in range(0,n-l+1):
-            selectedCards=hand[i:i+l]
-            if play(selectedCards,player.hand,lastCards) == 0:
-                for card in selectedCards:
-                    hand.remove(card)
-                return selectedCards
-            else:
-                selectedCards = []
-    return selectedCards
+class ComputerAlex:
+    def choose_cards(self, last_cards, hand):
+        n = len(hand)
+        l = len(last_cards)
+        selected_cards = []
+        if l == 0:
+            selected_cards.append(hand[0])
+            return selected_cards
+        elif l > 3:
+            return selected_cards
+        else:
+            for i in range(0, n - l + 1):
+                selected_cards = hand[i:i+l]
+                if play(selected_cards, hand, last_cards) == 0:
+                    return selected_cards
+                else:
+                    selected_cards = []
+        return selected_cards
 
-def countNTuples(hand,N):
-    values=[]
+def countNTuples(hand, N):
+    values = []
     for card in hand:
         values.append(card.value)
-    ls=[]
+    ls = []
     for card in values:
         if values.count(card) == N and card not in ls:
             ls.append(card)
@@ -295,7 +299,7 @@ def game(players):
         if len(currentPlayer.hand) > 0:
             currentPlayer = currentPlayer.next_player(players)
         else:
-            repaint(currentPlayer,cards)
+            repaint(currentPlayer, cards)
             break
     error('Player ' + str(currentPlayer) + ' is the winner!')
 
@@ -314,19 +318,18 @@ red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 purple = (255, 0, 255)
-grey = (180,180,180)
+grey = (180, 180, 180)
 
 deck = []
-for i in list(range(0,52)):
+for i in list(range(0, 52)):
     deck.append(Card(i))
 
 A = Player("A")
 B = Player("B")
-C = Player("C")
-D = Player("D")
+B.computer = ComputerAlex()
 
-players = [A,B,C,D]
-computers = [B,C,D]
+players = [A, B]
+computers = [B]
 
 game(players)
 
