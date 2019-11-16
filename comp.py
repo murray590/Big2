@@ -189,7 +189,8 @@ def value_checker(my_cards,last_cards):
                 error("You need to play a better hand!")
                 return 10
 
-def quantity_checker(my_cards,cards):
+
+def quantity_checker(my_cards, cards):
     if len(my_cards) == 0 or len(cards) == 0:
         return 0
     elif len(my_cards) > 5:
@@ -201,9 +202,10 @@ def quantity_checker(my_cards,cards):
     else:
         return 0
 
-def play(some_cards,hand,cards):
+
+def play(some_cards, hand, cards):
     if any(card.number == 0 for card in hand) and not any(card.number == 0 for card in some_cards):
-        error("You must include the 3 of diamonds in your play")
+        error("You must include the blue 3 in your play")
         return 1
     else:
         if quantity_checker(some_cards,cards) == 0 and value_checker(some_cards,cards) == 0:
@@ -211,6 +213,7 @@ def play(some_cards,hand,cards):
             return 0
         else:
             return 2
+
 
 def repaint(player,cards):
     global playButton
@@ -223,27 +226,29 @@ def repaint(player,cards):
     #Text(str(len(player.next_player(players).hand)), 30, purple, grey, (width/8, 0)).display()
     display_cards(cards,width/2 - 2.5*cardWidth,height/2 - 0.5*cardHeight)
     
+    
 def turn(player, last_played_cards):
     while True:
         repaint(player, last_played_cards)
         display_cards(player.hand, width/32, (6*height)/7)
         if player in computers:
-            time.sleep(3)
-            candidateCards = player.computer.choose_cards(last_played_cards, player.hand)
-            if play(candidateCards, player.hand, last_played_cards) == 0:
-                finalCards = candidateCards
-                for card in finalCards:
+            time.sleep(1)
+            candidate_cards = player.computer.choose_cards(last_played_cards, player.hand)
+            if play(candidate_cards, player.hand, last_played_cards) == 0:
+                final_cards = candidate_cards
+                for card in final_cards:
                     player.hand.remove(card)
             break
         else:
-            candidateCards = choose_cards(player.hand)
-            if play(candidateCards, player.hand, last_played_cards) == 0:
-                finalCards = candidateCards
+            candidate_cards = choose_cards(player.hand)
+            if play(candidate_cards, player.hand, last_played_cards) == 0:
+                final_cards = candidate_cards
                 break           
-            for card in candidateCards:
+            for card in candidate_cards:
                 player.hand.append(card)
             player.hand.sort(key=lambda card: card.number)
-    return finalCards
+    return final_cards
+
 
 def display_cards(cards, left, top):
     n = len(cards)
@@ -251,14 +256,17 @@ def display_cards(cards, left, top):
         cards[i].display(left + (i*cardWidth), top)
     pygame.display.update()
 
+
 def error(message):
     pass
 #    Text(message, 30, purple, grey, (width/10, height/3)).display()
 #    pygame.display.update()
-##    time.sleep(5)
+#    time.sleep(5)
+
 
 class ComputerAlex:
-    def choose_cards(self, last_cards, hand):
+    @staticmethod
+    def choose_cards(last_cards, hand):
         n = len(hand)
         l = len(last_cards)
         selected_cards = []
@@ -276,32 +284,34 @@ class ComputerAlex:
                     selected_cards = []
         return selected_cards
 
-def countNTuples(hand, N):
+
+def count_n_tuples(hand, n):
     values = []
     for card in hand:
         values.append(card.value)
     ls = []
     for card in values:
-        if values.count(card) == N and card not in ls:
+        if values.count(card) == n and card not in ls:
             ls.append(card)
     return len(ls)
     
+    
 def game(players):
     deal(players)
-    currentPlayer = who_starts(players)
+    current_player = who_starts(players)
     cards = []
     while True:
-        if (all(player.foot == [] for player in currentPlayer.opponents(players)) and currentPlayer.foot != []) == True:
+        if (all(player.foot == [] for player in current_player.opponents(players)) and current_player.foot != []) == True:
             cards = []
-        currentPlayer.foot = turn(currentPlayer,cards)
-        if currentPlayer.foot != []:
-            cards = currentPlayer.foot
-        if len(currentPlayer.hand) > 0:
-            currentPlayer = currentPlayer.next_player(players)
+        current_player.foot = turn(current_player,cards)
+        if current_player.foot != []:
+            cards = current_player.foot
+        if len(current_player.hand) > 0:
+            current_player = current_player.next_player(players)
         else:
-            repaint(currentPlayer, cards)
+            repaint(current_player, cards)
             break
-    error('Player ' + str(currentPlayer) + ' is the winner!')
+    error('Player ' + str(current_player) + ' is the winner!')
 
 pygame.init()
 pygame.display.set_caption('Big2')
@@ -326,10 +336,11 @@ for i in list(range(0, 52)):
 
 A = Player("A")
 B = Player("B")
+A.computer = ComputerAlex()
 B.computer = ComputerAlex()
 
 players = [A, B]
-computers = [B]
+computers = [player for player in players if hasattr(player, 'computer')]
 
 game(players)
 
