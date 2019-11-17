@@ -3,72 +3,60 @@ import math
 import pygame
 import time
 
+
 class Player:
-    def __init__(self,x):
-                self.hand = []
-                self.foot = []
-                self.name = x
-    def __repr__(self):
-        return self.name
-    def opponents(self,people):
+    def __init__(self, x):
+        self.hand = []
+        self.foot = []
+        self.name = x
+
+    def opponents(self, people):
         opponents = list(people)
         opponents.remove(self)
         return opponents
-    def next_player(self,people):
+
+    def next_player(self, people):
         return people[(people.index(self) + 1) % len(people)]
 
+
 class Text:
-    def __init__(self,text,size,colour,background,location):
-                self.text = text
-                self.size = size
-                self.colour = colour
-                self.location = location
-                self.background = background
+    def __init__(self, text, size, colour, background, location):
+        self.text = text
+        self.size = size
+        self.colour = colour
+        self.location = location
+        self.background = background
+
     def display(self):
-        basicFont = pygame.font.SysFont(None, self.size)
-        words = basicFont.render(self.text, True, self.colour, self.background)
-        screen.blit(words,self.location)
+        basic_font = pygame.font.SysFont(None, self.size)
+        words = basic_font.render(self.text, True, self.colour, self.background)
+        screen.blit(words, self.location)
+
 
 class Card:
-    def __init__(self,number):
+    def __init__(self, number):
         self.number = number
         self.suit = number % 4
         self.value = math.floor(number/4)
-        if self.value == 12:
-            self.ppValue = 2
-        elif self.value == 11:
-            self.ppValue = 'A'
-        elif self.value == 10:
-            self.ppValue = 'K'
-        elif self.value == 9:
-            self.ppValue = 'Q'
-        elif self.value == 8:
-            self.ppValue = 'J'
-        else:
-            self.ppValue = self.value + 3
-        if self.suit == 0:
-            self.colour = blue
-        elif self.suit == 1:
-            self.colour = green
-        elif self.suit == 2:
-            self.colour = red
-        elif self.suit == 3:
-            self.colour = black
-        else:
-            self.colour = white
+        self.value_to_pp = {12: 2, 11: 'A', 10: 'K', 9: 'Q', 8: 'J'}
+        self.pp_value = self.value_to_pp[self.value] if self.value in self.value_to_pp else self.value + 3
+        self.suit_to_colour = {0: blue, 1: green, 2: red, 3: black}
+        self.colour = self.suit_to_colour[self.suit]
 
-    def display(self,left,top):
+    def display(self, left, top):
         self.left = left
         self.top = top
-        self.image = pygame.draw.rect(screen,self.colour,(left,top,cardWidth,cardHeight),0)
-        Text(str(self.ppValue), 60, grey, self.colour, (left, top)).display()
+        self.image = pygame.draw.rect(screen, self.colour, (left, top, cardWidth, cardHeight), 0)
+        Text(str(self.pp_value), 60, grey, self.colour, (left, top)).display()
+
 
 def deal(some_players):
     num_players = len(some_players)
     num_hands = num_players * 2 if num_players == 2 else num_players
     random.shuffle(deck)
-    for i in range(0, num_players):
-        some_players[i].hand = sorted(deck[int(i*(52/num_hands)):int((i+1)*(52/num_hands))], key=lambda card: card.number)
+    for index in range(0, num_players):
+        some_players[index].hand = sorted(deck[int(index * (52 / num_hands)):int((index + 1) * (52 / num_hands))], key=lambda card: card.number)
+
 
 def who_starts(some_players):
     lowest_card_numbers = [player.hand[0].number for player in some_players]
@@ -77,32 +65,34 @@ def who_starts(some_players):
         if any(card.number == min_card for card in p.hand):
             return p
 
+
 def choose_cards(hand):
     my_cards = []
     while True:
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                if playButton.collidepoint(pos):
+                if play_button.collidepoint(pos):
                     hand.sort(key=lambda card: card.number)
                     my_cards.sort(key=lambda card: card.number)
                     return my_cards
                 if any(card.image.collidepoint(pos) for card in hand):
-                    selectedCard = next((y for y in hand if y.image.collidepoint(pos)), None)
-                    pygame.draw.rect(screen,white,(selectedCard.left,selectedCard.top,cardWidth,cardHeight),0)
-                    selectedCard.display(selectedCard.left,selectedCard.top - cardHeight/2)
+                    selected_card = next((y for y in hand if y.image.collidepoint(pos)), None)
+                    pygame.draw.rect(screen, white, (selected_card.left, selected_card.top, cardWidth, cardHeight), 0)
+                    selected_card.display(selected_card.left, selected_card.top - cardHeight / 2)
                     pygame.display.update()
-                    my_cards.append(selectedCard)
-                    hand.remove(selectedCard)
+                    my_cards.append(selected_card)
+                    hand.remove(selected_card)
                 elif any(card.image.collidepoint(pos) for card in my_cards):
-                    selectedCard = next((y for y in my_cards if y.image.collidepoint(pos)), None)
-                    pygame.draw.rect(screen,white,(selectedCard.left,selectedCard.top,cardWidth,cardHeight),0)
-                    selectedCard.display(selectedCard.left,selectedCard.top + cardHeight/2)
+                    selected_card = next((y for y in my_cards if y.image.collidepoint(pos)), None)
+                    pygame.draw.rect(screen, white, (selected_card.left, selected_card.top, cardWidth, cardHeight), 0)
+                    selected_card.display(selected_card.left, selected_card.top + cardHeight / 2)
                     pygame.display.update()
-                    my_cards.remove(selectedCard)
-                    hand.append(selectedCard)
+                    my_cards.remove(selected_card)
+                    hand.append(selected_card)
             elif event.type == pygame.QUIT:
                 pygame.quit()
+
 
 def value(quintuple):
     va = []
@@ -110,19 +100,21 @@ def value(quintuple):
         va.append(card.value - quintuple[0].value)
     return va
 
+
 def suit(quintuple):
     su = []
     for card in quintuple:
         su.append(card.suit)
     return su
 
-def rank(fiveCards):
-    if fiveCards == []:
+
+def rank(five_cards):
+    if five_cards == []:
         return 0
     else:
-        v = value(fiveCards)
-        s = suit(fiveCards)
-        if v == [0,1,2,3,4]:
+        v = value(five_cards)
+        s = suit(five_cards)
+        if v == [0, 1, 2, 3, 4]:
             if s[0] == s[1] == s[2] == s[3] == s[4]:
                 return 5
             else:
@@ -136,7 +128,8 @@ def rank(fiveCards):
         else:
             return -1
 
-def value_checker(my_cards,last_cards):
+
+def value_checker(my_cards, last_cards):
     if len(my_cards) == 0:
         return 0
     elif len(my_cards) == 1:
@@ -208,29 +201,29 @@ def play(some_cards, hand, cards):
         error("You must include the blue 3 in your play")
         return 1
     else:
-        if quantity_checker(some_cards,cards) == 0 and value_checker(some_cards,cards) == 0:
-            display_cards(some_cards,width/2 - 2.5*cardWidth,height/2 - 0.5*cardHeight)
+        if quantity_checker(some_cards, cards) == 0 and value_checker(some_cards, cards) == 0:
+            display_cards(some_cards, width/2 - 2.5*cardWidth, height/2 - 0.5 * cardHeight)
             return 0
         else:
             return 2
 
 
-def repaint(player,cards):
-    global playButton
+def repaint(player, cards):
+    global play_button
     screen.fill(white)
     pygame.draw.ellipse(screen, grey, (width/6, height/4, 2 * width/3, height/2), 0)
-    playButton = pygame.draw.rect(screen,grey,((6*width)/7,(3*height)/4,2.1*cardWidth,0.5*cardHeight),0)
-    Text('Play/pass',30,purple,grey,((6*width)/7, (3*height)/4)).display()
-    Text('Player ' + str(player) + ':', 30, purple, white, (0, (3*height)/4)).display()
-    #Text('Player ' + str(player.next_player(players)) + ':', 30, purple, white, (0, 0)).display()
-    #Text(str(len(player.next_player(players).hand)), 30, purple, grey, (width/8, 0)).display()
-    display_cards(cards,width/2 - 2.5*cardWidth,height/2 - 0.5*cardHeight)
+    play_button = pygame.draw.rect(screen,grey,((6*width)/7,(3*height)/4,2.1*cardWidth,0.5*cardHeight),0)
+    Text('Play/pass', 30, purple, grey, ((6 * width) / 7, (3 * height) / 4)).display()
+    Text('Player ' + str(player) + ':', 30, purple, white, (0, (3 * height) / 4)).display()
+    # Text('Player ' + str(player.next_player(players)) + ':', 30, purple, white, (0, 0)).display()
+    # Text(str(len(player.next_player(players).hand)), 30, purple, grey, (width/8, 0)).display()
+    display_cards(cards, width / 2 - 2.5 * cardWidth, height / 2 - 0.5 * cardHeight)
     
     
 def turn(player, last_played_cards):
     while True:
         repaint(player, last_played_cards)
-        display_cards(player.hand, width/32, (6*height)/7)
+        display_cards(player.hand, width / 32, (6 * height) / 7)
         if player in computers:
             time.sleep(1)
             candidate_cards = player.computer.choose_cards(last_played_cards, player.hand)
@@ -253,7 +246,7 @@ def turn(player, last_played_cards):
 def display_cards(cards, left, top):
     n = len(cards)
     for i in range(0, n):
-        cards[i].display(left + (i*cardWidth), top)
+        cards[i].display(left + (i * cardWidth), top)
     pygame.display.update()
 
 
