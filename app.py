@@ -17,7 +17,7 @@ def display_text(text, size, colour, background, location):
 def display_single_card(card, left, top):
     card.left = left
     card.top = top
-    card.image = pygame.draw.rect(screen, card.colour, (left, top, card_width, card_height), 0)
+    card.image = pygame.draw.rect(screen, card.colour, (left, top, CONFIG['card_width'], CONFIG['card_height']), 0)
     display_text(str(card.pp_value), 60, CONFIG['grey'], card.colour, (left, top))
 
 
@@ -33,15 +33,15 @@ def choose_cards(hand):
                     return my_cards
                 if any(card.image.collidepoint(pos) for card in hand):
                     selected_card = next((y for y in hand if y.image.collidepoint(pos)), None)
-                    pygame.draw.rect(screen, CONFIG['white'], (selected_card.left, selected_card.top, card_width, card_height), 0)
-                    selected_card.display(selected_card.left, selected_card.top - card_height / 2)
+                    pygame.draw.rect(screen, CONFIG['white'], (selected_card.left, selected_card.top, CONFIG['card_width'], CONFIG['card_height']), 0)
+                    selected_card.display(selected_card.left, selected_card.top - CONFIG['card_height'] / 2)
                     pygame.display.update()
                     my_cards.append(selected_card)
                     hand.remove(selected_card)
                 elif any(card.image.collidepoint(pos) for card in my_cards):
                     selected_card = next((y for y in my_cards if y.image.collidepoint(pos)), None)
-                    pygame.draw.rect(screen, CONFIG['white'], (selected_card.left, selected_card.top, card_width, card_height), 0)
-                    selected_card.display(selected_card.left, selected_card.top + card_height / 2)
+                    pygame.draw.rect(screen, CONFIG['white'], (selected_card.left, selected_card.top, CONFIG['card_width'], CONFIG['card_height']), 0)
+                    selected_card.display(selected_card.left, selected_card.top + CONFIG['card_height'] / 2)
                     pygame.display.update()
                     my_cards.remove(selected_card)
                     hand.append(selected_card)
@@ -57,7 +57,7 @@ def play(some_cards, hand, cards):
         the_cards = CardList(some_cards)
         old_cards = CardList(cards)
         if the_cards.is_valid_quantity(old_cards) and the_cards.is_stronger_than(old_cards):
-            display_cards(some_cards, width/2 - 2.5*card_width, height/2 - 0.5*card_height)
+            display_cards(some_cards, CONFIG['width']/2 - 2.5*CONFIG['card_width'], CONFIG['height']/2 - 0.5*CONFIG['card_height'])
             return 0
         else:
             return 2
@@ -66,19 +66,19 @@ def play(some_cards, hand, cards):
 def repaint(player, cards):
     global play_button
     screen.fill(CONFIG['white'])
-    pygame.draw.ellipse(screen, CONFIG['grey'], (width/6, height/4, 2 * width/3, height/2), 0)
-    play_button = pygame.draw.rect(screen, CONFIG['grey'], (6*width/7, 3*height/4, 2.1*card_width, 0.5*card_height), 0)
-    display_text('Play/pass', 30, CONFIG['purple'], CONFIG['grey'], (6*width/7, 3*height/4))
-    display_text(f"Player {player.name}:", 30, CONFIG['purple'], CONFIG['white'], (0, 3*height/4))
+    pygame.draw.ellipse(screen, CONFIG['grey'], (CONFIG['width']/6, CONFIG['height']/4, 2 * CONFIG['width']/3, CONFIG['height']/2), 0)
+    play_button = pygame.draw.rect(screen, CONFIG['grey'], (6*CONFIG['width']/7, 3*CONFIG['height']/4, 2.1*CONFIG['card_width'], 0.5*CONFIG['card_height']), 0)
+    display_text('Play/pass', 30, CONFIG['purple'], CONFIG['grey'], (6*CONFIG['width']/7, 3*CONFIG['height']/4))
+    display_text(f"Player {player.name}:", 30, CONFIG['purple'], CONFIG['white'], (0, 3*CONFIG['height']/4))
     # display_text('Player ' + str(player.next_player(players)) + ':', 30, CONFIG['purple'], CONFIG['white'], (0, 0))
-    # display_text(str(len(player.next_player(players).hand)), 30, CONFIG['purple'], CONFIG['grey'], (width/8, 0))
-    display_cards(cards, width/2 - 2.5*card_width, height/2 - 0.5*card_height)
+    # display_text(str(len(player.next_player(players).hand)), 30, CONFIG['purple'], CONFIG['grey'], (CONFIG['width']/8, 0))
+    display_cards(cards, CONFIG['width']/2 - 2.5*CONFIG['card_width'], CONFIG['height']/2 - 0.5*CONFIG['card_height'])
     
     
 def turn(player, last_played_cards):
     while True:
         repaint(player, last_played_cards)
-        display_cards(player.hand, width/32, 6*height/7)
+        display_cards(player.hand, CONFIG['width']/32, 6*CONFIG['height']/7)
         if hasattr(player, 'computer'):
             time.sleep(1)
             candidate_cards = player.computer.choose_cards(last_played_cards, player.hand)
@@ -101,19 +101,19 @@ def turn(player, last_played_cards):
 def display_cards(cards, left, top):
     n = len(cards)
     for i in range(0, n):
-        display_single_card(cards[i], left + i*card_width, top)
+        display_single_card(cards[i], left + i*CONFIG['card_width'], top)
     pygame.display.update()
 
 
 def error(message):
     pass
-    # display_text(message, 30, CONFIG['purple'], CONFIG['grey'], (width/10, height/3)).display()
+    # display_text(message, 30, CONFIG['purple'], CONFIG['grey'], (CONFIG['width']/10, CONFIG['height']/3)).display()
     # pygame.display.update()
     # time.sleep(5)
 
 
 def message(message):
-    display_text(message, 30, CONFIG['purple'], CONFIG['grey'], (width/10, height/3)).display()
+    display_text(message, 30, CONFIG['purple'], CONFIG['grey'], (CONFIG['width']/10, CONFIG['height']/3)).display()
     pygame.display.update()
     time.sleep(5)
     
@@ -139,11 +139,7 @@ def game(players):
 pygame.init()
 pygame.display.set_caption('Big2')
 
-width = 800
-height = 560
-card_width = width/16
-card_height = height/8
-screen = pygame.display.set_mode((width, height))
+screen = pygame.display.set_mode((CONFIG['width'], CONFIG['height']))
 
 A = Player("A", ComputerAlex())
 B = Player("B", ComputerAlex())
