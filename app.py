@@ -6,7 +6,7 @@ from core.player import Player
 from core.dealer import Dealer
 from core.graphics import Graphics
 from core.printer import Printer
-from computers.computer_alex import ComputerAlex
+from bots.alex_bot import AlexBot
 
 
 class App:
@@ -68,4 +68,4 @@ class App:
         self.printer.message(f"Player {current_player.name} is the winner!")
 
 
-App([Player("A", ComputerAlex()), Player("B", ComputerAlex())])
+App([Player("A", AlexBot()), Player("B", AlexBot())])

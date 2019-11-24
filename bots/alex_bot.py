@@ -1,5 +1,5 @@
 from core.card_list import CardList
-from computers.base_computer import BaseComputer
+from bots.base_bot import BaseBot
 
 
 def play(some_cards, hand, cards):
@@ -38,7 +38,7 @@ def count_n_tuples(hand, n):
     return len(ls)
 
 
-class ComputerAlex(BaseComputer):
+class AlexBot(BaseBot):
     @staticmethod
     def choose_cards(last_card_list, hand):
         num_hand = len(hand)
