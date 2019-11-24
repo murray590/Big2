@@ -3,20 +3,28 @@ import math
 import pygame
 import time
 
+from player import Player
 
-class Player:
-    def __init__(self, x):
-        self.hand = []
-        self.foot = []
-        self.name = x
 
-    def opponents(self, people):
-        opponents = list(people)
-        opponents.remove(self)
-        return opponents
-
-    def next_player(self, people):
-        return people[(people.index(self) + 1) % len(people)]
+class ComputerAlex:
+    @staticmethod
+    def choose_cards(last_cards, hand):
+        num_hand = len(hand)
+        num_played = len(last_cards)
+        selected_cards = []
+        if num_played == 0:
+            selected_cards.append(hand[0])
+            return selected_cards
+        elif num_played > 3:
+            return selected_cards
+        else:
+            for i in range(0, num_hand - num_played + 1):
+                selected_cards = hand[i:i+num_played]
+                if play(selected_cards, hand, last_cards) == 0:
+                    return selected_cards
+                else:
+                    selected_cards = []
+        return selected_cards
 
 
 class Text:
@@ -46,7 +54,7 @@ class Card:
     def display(self, left, top):
         self.left = left
         self.top = top
-        self.image = pygame.draw.rect(screen, self.colour, (left, top, cardWidth, cardHeight), 0)
+        self.image = pygame.draw.rect(screen, self.colour, (left, top, card_width, card_height), 0)
         Text(str(self.pp_value), 60, grey, self.colour, (left, top)).display()
 
 
@@ -78,15 +86,15 @@ def choose_cards(hand):
                     return my_cards
                 if any(card.image.collidepoint(pos) for card in hand):
                     selected_card = next((y for y in hand if y.image.collidepoint(pos)), None)
-                    pygame.draw.rect(screen, white, (selected_card.left, selected_card.top, cardWidth, cardHeight), 0)
-                    selected_card.display(selected_card.left, selected_card.top - cardHeight / 2)
+                    pygame.draw.rect(screen, white, (selected_card.left, selected_card.top, card_width, card_height), 0)
+                    selected_card.display(selected_card.left, selected_card.top - card_height / 2)
                     pygame.display.update()
                     my_cards.append(selected_card)
                     hand.remove(selected_card)
                 elif any(card.image.collidepoint(pos) for card in my_cards):
                     selected_card = next((y for y in my_cards if y.image.collidepoint(pos)), None)
-                    pygame.draw.rect(screen, white, (selected_card.left, selected_card.top, cardWidth, cardHeight), 0)
-                    selected_card.display(selected_card.left, selected_card.top + cardHeight / 2)
+                    pygame.draw.rect(screen, white, (selected_card.left, selected_card.top, card_width, card_height), 0)
+                    selected_card.display(selected_card.left, selected_card.top + card_height / 2)
                     pygame.display.update()
                     my_cards.remove(selected_card)
                     hand.append(selected_card)
@@ -202,7 +210,7 @@ def play(some_cards, hand, cards):
         return 1
     else:
         if quantity_checker(some_cards, cards) == 0 and value_checker(some_cards, cards) == 0:
-            display_cards(some_cards, width/2 - 2.5*cardWidth, height/2 - 0.5 * cardHeight)
+            display_cards(some_cards, width/2 - 2.5*card_width, height/2 - 0.5*card_height)
             return 0
         else:
             return 2
@@ -212,19 +220,19 @@ def repaint(player, cards):
     global play_button
     screen.fill(white)
     pygame.draw.ellipse(screen, grey, (width/6, height/4, 2 * width/3, height/2), 0)
-    play_button = pygame.draw.rect(screen,grey,((6*width)/7,(3*height)/4,2.1*cardWidth,0.5*cardHeight),0)
-    Text('Play/pass', 30, purple, grey, ((6 * width) / 7, (3 * height) / 4)).display()
-    Text('Player ' + str(player) + ':', 30, purple, white, (0, (3 * height) / 4)).display()
+    play_button = pygame.draw.rect(screen, grey, (6*width/7, 3*height/4, 2.1*card_width, 0.5*card_height), 0)
+    Text('Play/pass', 30, purple, grey, (6*width/7, 3*height/4)).display()
+    Text('Player ' + str(player) + ':', 30, purple, white, (0, 3*height/4)).display()
     # Text('Player ' + str(player.next_player(players)) + ':', 30, purple, white, (0, 0)).display()
     # Text(str(len(player.next_player(players).hand)), 30, purple, grey, (width/8, 0)).display()
-    display_cards(cards, width / 2 - 2.5 * cardWidth, height / 2 - 0.5 * cardHeight)
+    display_cards(cards, width/2 - 2.5*card_width, height/2 - 0.5*card_height)
     
     
 def turn(player, last_played_cards):
     while True:
         repaint(player, last_played_cards)
-        display_cards(player.hand, width / 32, (6 * height) / 7)
-        if player in computers:
+        display_cards(player.hand, width/32, 6*height/7)
+        if hasattr(player, 'computer'):
             time.sleep(1)
             candidate_cards = player.computer.choose_cards(last_played_cards, player.hand)
             if play(candidate_cards, player.hand, last_played_cards) == 0:
@@ -246,7 +254,7 @@ def turn(player, last_played_cards):
 def display_cards(cards, left, top):
     n = len(cards)
     for i in range(0, n):
-        cards[i].display(left + (i * cardWidth), top)
+        cards[i].display(left + i*card_width, top)
     pygame.display.update()
 
 
@@ -255,27 +263,6 @@ def error(message):
 #    Text(message, 30, purple, grey, (width/10, height/3)).display()
 #    pygame.display.update()
 #    time.sleep(5)
-
-
-class ComputerAlex:
-    @staticmethod
-    def choose_cards(last_cards, hand):
-        n = len(hand)
-        l = len(last_cards)
-        selected_cards = []
-        if l == 0:
-            selected_cards.append(hand[0])
-            return selected_cards
-        elif l > 3:
-            return selected_cards
-        else:
-            for i in range(0, n - l + 1):
-                selected_cards = hand[i:i+l]
-                if play(selected_cards, hand, last_cards) == 0:
-                    return selected_cards
-                else:
-                    selected_cards = []
-        return selected_cards
 
 
 def count_n_tuples(hand, n):
@@ -294,11 +281,11 @@ def game(players):
     current_player = who_starts(players)
     cards = []
     while True:
-        if (all(player.foot == [] for player in current_player.opponents(players)) and current_player.foot != []) == True:
+        if (all(player.last_played_cards == [] for player in current_player.opponents(players)) and current_player.last_played_cards != []) == True:
             cards = []
-        current_player.foot = turn(current_player,cards)
-        if current_player.foot != []:
-            cards = current_player.foot
+        current_player.last_played_cards = turn(current_player,cards)
+        if current_player.last_played_cards != []:
+            cards = current_player.last_played_cards
         if len(current_player.hand) > 0:
             current_player = current_player.next_player(players)
         else:
@@ -311,8 +298,8 @@ pygame.display.set_caption('Big2')
 
 width = 800
 height = 560
-cardWidth = width/16
-cardHeight = height/8
+card_width = width/16
+card_height = height/8
 screen = pygame.display.set_mode((width, height))
 
 white = (255, 255, 255)
@@ -327,13 +314,10 @@ deck = []
 for i in list(range(0, 52)):
     deck.append(Card(i))
 
-A = Player("A")
-B = Player("B")
-A.computer = ComputerAlex()
-B.computer = ComputerAlex()
+A = Player("A", ComputerAlex())
+B = Player("B", ComputerAlex())
 
 players = [A, B]
-computers = [player for player in players if hasattr(player, 'computer')]
 
 game(players)
 
