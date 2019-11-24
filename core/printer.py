@@ -9,8 +9,7 @@ class Printer:
         print(cards)
 
     def repaint(self, player, cards):
-        print(f"Player {player.name}:")
-        print(cards)
+        print(f"Player {player.name} to play, the last played cards were: {cards}")
 
     def message(self, message):
         print(message)

@@ -33,7 +33,7 @@ class Graphics(Printer):
                 if event.type == pygame.MOUSEBUTTONUP:
                     position = pygame.mouse.get_pos()
                     if self.play_button.collidepoint(position):
-                        return CardList(selected_cards)
+                        return selected_cards
                     elif any(card.image.collidepoint(position) for card in hand):
                         clicked_card = next((y for y in hand if y.image.collidepoint(position)), None)
                         self.handle_card_click(clicked_card, selected_cards)

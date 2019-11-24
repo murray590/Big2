@@ -13,6 +13,8 @@ class CardList:
     def is_valid_play(self, hand, cards):
         if any(card.number == 0 for card in hand) and not any(card.number == 0 for card in self.cards):
             return "You must include the blue 3 in your play"
+        elif self.type == Hand.PASS:
+            return True
         return self.is_valid_quantity(cards) and self.is_stronger_than(cards)
 
     def is_valid_quantity(self, cards):
