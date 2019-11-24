@@ -8,10 +8,16 @@ class CardList:
         self.length = len(self.cards)
         self.type = self.type_determiner()
         if self.cards:
-            self.kicker = self.cards[2] if self.type in {Hand.FULL_HOUSE, Hand.QUADS} else self.cards[-1]
+            self.kicker = (
+                self.cards[2]
+                if self.type in {Hand.FULL_HOUSE, Hand.QUADS}
+                else self.cards[-1]
+            )
 
     def is_valid_play(self, hand, cards):
-        if any(card.number == 0 for card in hand) and not any(card.number == 0 for card in self.cards):
+        if any(card.number == 0 for card in hand) and not any(
+            card.number == 0 for card in self.cards
+        ):
             return "You must include the blue 3 in your play"
         elif self.type == Hand.PASS:
             return True
@@ -21,10 +27,10 @@ class CardList:
         if self.length == 0 or cards.length == 0:
             return True
         elif self.length > 5:
-            print('You must select at most 5 cards!')
+            print("You must select at most 5 cards!")
             return False
         elif self.length != cards.length:
-            print('You must select the same number of cards as the previous play!')
+            print("You must select the same number of cards as the previous play!")
         return True
 
     def is_stronger_than(self, cards):
@@ -50,7 +56,10 @@ class CardList:
                 return Hand.INVALID, "A three card play must be a three of a kind!"
             return Hand.TRIPLE
         elif self.length == 4:
-            return Hand.INVALID, "There is no valid four card play, a four of a kind must be played with a kicker!"
+            return (
+                Hand.INVALID,
+                "There is no valid four card play, a four of a kind must be played with a kicker!",
+            )
         elif self.length == 5:
             return self.five_card_evaluator()
         return Hand.INVALID, "A play must have at most 5 cards!"
@@ -85,6 +94,7 @@ class CardList:
         for card in self.cards:
             suits.append(card.suit)
         return suits
+
 
 # from card import Card
 #

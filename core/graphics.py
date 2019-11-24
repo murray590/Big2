@@ -19,7 +19,7 @@ class Colour(Enum):
 class Graphics(Printer):
     def __init__(self, width, height):
         pygame.init()
-        pygame.display.set_caption('Big2')
+        pygame.display.set_caption("Big2")
         self.width = width
         self.height = height
         self.card_width = self.width / 16
@@ -35,7 +35,9 @@ class Graphics(Printer):
                     if self.play_button.collidepoint(position):
                         return selected_cards
                     elif any(card.image.collidepoint(position) for card in hand):
-                        clicked_card = next((y for y in hand if y.image.collidepoint(position)), None)
+                        clicked_card = next(
+                            (y for y in hand if y.image.collidepoint(position)), None
+                        )
                         self.handle_card_click(clicked_card, selected_cards)
                 elif event.type == pygame.QUIT:
                     pygame.quit()
@@ -43,21 +45,30 @@ class Graphics(Printer):
     def handle_card_click(self, clicked_card, selected_cards):
         if clicked_card in selected_cards:
             selected_cards.remove(clicked_card)
-            self.move_card_vertically(clicked_card, self.card_height/2)
+            self.move_card_vertically(clicked_card, self.card_height / 2)
         else:
             selected_cards.append(clicked_card)
-            self.move_card_vertically(clicked_card, - self.card_height/2)
+            self.move_card_vertically(clicked_card, -self.card_height / 2)
 
     def move_card_vertically(self, card, distance):
-        pygame.draw.rect(self.screen, Colour.WHITE.value, (card.left, card.top, self.card_width, self.card_height), 0)
+        pygame.draw.rect(
+            self.screen,
+            Colour.WHITE.value,
+            (card.left, card.top, self.card_width, self.card_height),
+            0,
+        )
         self.display_single_card(card, card.left, card.top + distance)
         pygame.display.update()
 
     def display_single_card(self, card, left, top):
         card.left = left
         card.top = top
-        card.image = pygame.draw.rect(self.screen, card.colour, (left, top, self.card_width, self.card_height), 0)
-        self.display_text(str(card.pp_value), 60, Colour.GREY.value, card.colour, (left, top))
+        card.image = pygame.draw.rect(
+            self.screen, card.colour, (left, top, self.card_width, self.card_height), 0
+        )
+        self.display_text(
+            str(card.pp_value), 60, Colour.GREY.value, card.colour, (left, top)
+        )
 
     def display_text(self, text, size, colour, background, location):
         basic_font = pygame.font.SysFont(None, size)
@@ -66,11 +77,42 @@ class Graphics(Printer):
 
     def repaint(self, player, cards):
         self.screen.fill(Colour.WHITE.value)
-        pygame.draw.ellipse(self.screen, Colour.GREY.value, (self.width/6, self.height/4, 2 * self.width/3, self.height/2), 0)
-        self.play_button = pygame.draw.rect(self.screen, Colour.GREY.value, (6 * self.width/7, 3 * self.height/4, 2.1 * self.card_width, 0.5 * self.card_height), 0)
-        self.display_text('Play/pass', 30, Colour.PURPLE.value, Colour.GREY.value, (6 * self.width/7, 3 * self.height/4))
-        self.display_text(f"Player {player.name}:", 30, Colour.PURPLE.value, Colour.WHITE.value, (0, 3 * self.height/4))
-        self.display_cards(cards, self.width/2 - 2.5*self.card_width, self.height/2 - 0.5*self.card_height)
+        pygame.draw.ellipse(
+            self.screen,
+            Colour.GREY.value,
+            (self.width / 6, self.height / 4, 2 * self.width / 3, self.height / 2),
+            0,
+        )
+        self.play_button = pygame.draw.rect(
+            self.screen,
+            Colour.GREY.value,
+            (
+                6 * self.width / 7,
+                3 * self.height / 4,
+                2.1 * self.card_width,
+                0.5 * self.card_height,
+            ),
+            0,
+        )
+        self.display_text(
+            "Play/pass",
+            30,
+            Colour.PURPLE.value,
+            Colour.GREY.value,
+            (6 * self.width / 7, 3 * self.height / 4),
+        )
+        self.display_text(
+            f"Player {player.name}:",
+            30,
+            Colour.PURPLE.value,
+            Colour.WHITE.value,
+            (0, 3 * self.height / 4),
+        )
+        self.display_cards(
+            cards,
+            self.width / 2 - 2.5 * self.card_width,
+            self.height / 2 - 0.5 * self.card_height,
+        )
 
     def display_cards(self, cards, left, top):
         for i in range(0, len(cards)):
@@ -78,7 +120,13 @@ class Graphics(Printer):
         pygame.display.update()
 
     def message(self, message):
-        self.display_text(message, 30, Colour.PURPLE.value, Colour.GREY.value, (self.width/10, self.height/3))
+        self.display_text(
+            message,
+            30,
+            Colour.PURPLE.value,
+            Colour.GREY.value,
+            (self.width / 10, self.height / 3),
+        )
         pygame.display.update()
         time.sleep(5)
 

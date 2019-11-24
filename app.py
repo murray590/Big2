@@ -12,18 +12,32 @@ from computers.computer_alex import ComputerAlex
 class App:
     def __init__(self, players):
         self.players = players
-        self.printer = Printer() if all(hasattr(player, 'computer') for player in self.players) else Graphics(800, 560)
+        self.printer = (
+            Printer()
+            if all(hasattr(player, "computer") for player in self.players)
+            else Graphics(800, 560)
+        )
         self.game()
 
     def turn(self, player, last_played_cards):
         while True:
             self.printer.repaint(player, last_played_cards.cards)
-            self.printer.display_cards(player.hand, self.printer.width/32, 6 * self.printer.height/7)
+            self.printer.display_cards(
+                player.hand, self.printer.width / 32, 6 * self.printer.height / 7
+            )
             time.sleep(1)
-            chosen_cards = player.computer.choose_cards(last_played_cards, player.hand) if hasattr(player, 'computer') else self.printer.choose_cards(player.hand)
+            chosen_cards = (
+                player.computer.choose_cards(last_played_cards, player.hand)
+                if hasattr(player, "computer")
+                else self.printer.choose_cards(player.hand)
+            )
             candidate_cards = CardList(chosen_cards)
             if candidate_cards.is_valid_play(player.hand, last_played_cards):
-                self.printer.display_cards(candidate_cards.cards, self.printer.width/2 - 2.5*self.printer.card_width, self.printer.height/2 - 0.5*self.printer.card_height)
+                self.printer.display_cards(
+                    candidate_cards.cards,
+                    self.printer.width / 2 - 2.5 * self.printer.card_width,
+                    self.printer.height / 2 - 0.5 * self.printer.card_height,
+                )
                 for card in candidate_cards.cards:
                     player.hand.remove(card)
                 player.hand.sort(key=lambda card: card.number)
@@ -35,8 +49,13 @@ class App:
         current_player = dealer.who_starts()
         cards = CardList([])
         while True:
-            if (all(player.last_played_cards.type == Hand.PASS for player in
-                    current_player.opponents(self.players)) and current_player.last_played_cards != Hand.PASS):
+            if (
+                all(
+                    player.last_played_cards.type == Hand.PASS
+                    for player in current_player.opponents(self.players)
+                )
+                and current_player.last_played_cards != Hand.PASS
+            ):
                 cards = CardList([])
             current_player.last_played_cards = self.turn(current_player, cards)
             if current_player.last_played_cards.type != Hand.PASS:

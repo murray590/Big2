@@ -12,7 +12,11 @@ class Dealer:
     def deal(self):
         random.shuffle(self.deck)
         for index in range(0, len(self.players)):
-            self.players[index].hand = self.deck[int(index * 52/self.number_of_hands):int((index+1) * 52/self.number_of_hands)]
+            self.players[index].hand = self.deck[
+                int(index * 52 / self.number_of_hands) : int(
+                    (index + 1) * 52 / self.number_of_hands
+                )
+            ]
             self.players[index].hand.sort(key=lambda card: card.number)
 
     def who_starts(self):

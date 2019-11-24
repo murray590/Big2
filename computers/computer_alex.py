@@ -3,10 +3,14 @@ from computers.base_computer import BaseComputer
 
 
 def play(some_cards, hand, cards):
-    if any(card.number == 0 for card in hand) and not any(card.number == 0 for card in some_cards):
+    if any(card.number == 0 for card in hand) and not any(
+        card.number == 0 for card in some_cards
+    ):
         return 1
     else:
-        if quantity_checker(some_cards, cards) == 0 and CardList(some_cards).is_stronger_than(CardList(cards)):
+        if quantity_checker(some_cards, cards) == 0 and CardList(
+            some_cards
+        ).is_stronger_than(CardList(cards)):
             return 0
         else:
             return 2
@@ -45,7 +49,7 @@ class ComputerAlex(BaseComputer):
             pass
         else:
             for i in range(0, num_hand - num_played + 1):
-                selected_cards = hand[i:i+num_played]
+                selected_cards = hand[i : i + num_played]
                 if CardList(selected_cards).is_valid_play(hand, last_card_list):
                     return selected_cards
             return []
