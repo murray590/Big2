@@ -102,19 +102,17 @@ def choose_cards(hand):
                 pygame.quit()
 
 
-def value(quintuple):
-    va = []
-    for card in quintuple:
-        va.append(card.value - quintuple[0].value)
-    return va
+def value(five_cards):
+    values = []
+    for card in five_cards:
+        values.append(card.value - five_cards[0].value)
+    return values
 
-
-def suit(quintuple):
-    su = []
-    for card in quintuple:
-        su.append(card.suit)
-    return su
-
+def suit(five_cards):
+    suits = []
+    for card in five_cards:
+        suits.append(card.suit)
+    return suits
 
 def rank(five_cards):
     if five_cards == []:
@@ -222,7 +220,7 @@ def repaint(player, cards):
     pygame.draw.ellipse(screen, grey, (width/6, height/4, 2 * width/3, height/2), 0)
     play_button = pygame.draw.rect(screen, grey, (6*width/7, 3*height/4, 2.1*card_width, 0.5*card_height), 0)
     Text('Play/pass', 30, purple, grey, (6*width/7, 3*height/4)).display()
-    Text('Player ' + str(player) + ':', 30, purple, white, (0, 3*height/4)).display()
+    Text(f"Player {player.name}:", 30, purple, white, (0, 3*height/4)).display()
     # Text('Player ' + str(player.next_player(players)) + ':', 30, purple, white, (0, 0)).display()
     # Text(str(len(player.next_player(players).hand)), 30, purple, grey, (width/8, 0)).display()
     display_cards(cards, width/2 - 2.5*card_width, height/2 - 0.5*card_height)
@@ -260,9 +258,15 @@ def display_cards(cards, left, top):
 
 def error(message):
     pass
-#    Text(message, 30, purple, grey, (width/10, height/3)).display()
-#    pygame.display.update()
-#    time.sleep(5)
+    # Text(message, 30, purple, grey, (width/10, height/3)).display()
+    # pygame.display.update()
+    # time.sleep(5)
+
+
+def message(message):
+    Text(message, 30, purple, grey, (width/10, height/3)).display()
+    pygame.display.update()
+    time.sleep(5)
 
 
 def count_n_tuples(hand, n):
@@ -283,7 +287,7 @@ def game(players):
     while True:
         if (all(player.last_played_cards == [] for player in current_player.opponents(players)) and current_player.last_played_cards != []) == True:
             cards = []
-        current_player.last_played_cards = turn(current_player,cards)
+        current_player.last_played_cards = turn(current_player, cards)
         if current_player.last_played_cards != []:
             cards = current_player.last_played_cards
         if len(current_player.hand) > 0:
@@ -291,7 +295,7 @@ def game(players):
         else:
             repaint(current_player, cards)
             break
-    error('Player ' + str(current_player) + ' is the winner!')
+    message(f"Player {current_player.name} is the winner!")
 
 pygame.init()
 pygame.display.set_caption('Big2')
