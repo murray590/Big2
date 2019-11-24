@@ -1,5 +1,4 @@
 from core.hand import Hand
-# from card import Card
 
 
 class CardList:
@@ -85,6 +84,8 @@ class CardList:
             suits.append(card.suit)
         return suits
 
+# from card import Card
+#
 # hand1 = CardList([Card(0), Card(4), Card(8), Card(12), Card(16)])
 # hand2 = CardList([Card(35), Card(39), Card(43), Card(47), Card(51)])
 #

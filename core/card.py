@@ -2,6 +2,7 @@ import math
 
 from core.graphics import Colour
 
+
 class Card:
     def __init__(self, number):
         self.number = number
