@@ -8,7 +8,8 @@ class CardList:
         self.cards = list_of_cards
         self.length = len(self.cards)
         self.type = self.type_determiner()
-        self.kicker = self.cards[2] if self.type in {Hand.FULL_HOUSE, Hand.QUADS} else self.cards[-1]
+        if self.cards:
+            self.kicker = self.cards[2] if self.type in {Hand.FULL_HOUSE, Hand.QUADS} else self.cards[-1]
 
     def is_stronger_than(self, cards):
         if self.type == cards.type:

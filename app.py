@@ -4,6 +4,7 @@ import pygame
 import time
 
 from player import Player
+from card_list import CardList
 
 
 class ComputerAlex:
@@ -102,93 +103,6 @@ def choose_cards(hand):
                 pygame.quit()
 
 
-def value(five_cards):
-    values = []
-    for card in five_cards:
-        values.append(card.value - five_cards[0].value)
-    return values
-
-def suit(five_cards):
-    suits = []
-    for card in five_cards:
-        suits.append(card.suit)
-    return suits
-
-def rank(five_cards):
-    if five_cards == []:
-        return 0
-    else:
-        v = value(five_cards)
-        s = suit(five_cards)
-        if v == [0, 1, 2, 3, 4]:
-            if s[0] == s[1] == s[2] == s[3] == s[4]:
-                return 5
-            else:
-                return 1
-        elif s[0] == s[1] == s[2] == s[3] == s[4]:
-            return 2
-        elif (v[0] == v[1]) and (v[3] == v[4]) and (v[2] == v[1] or v[2] == v[3]):
-            return 3
-        elif (v[0] == v[1] == v[2] == v[3]) or (v[1] == v[2] == v[3] == v[4]):
-            return 4
-        else:
-            return -1
-
-
-def value_checker(my_cards, last_cards):
-    if len(my_cards) == 0:
-        return 0
-    elif len(my_cards) == 1:
-        if len(last_cards) == 0 or my_cards[0].number > last_cards[0].number:
-            return 0
-        else:
-            error("You must play a higher card than the previous play!")
-            return 1
-    elif len(my_cards) == 2:
-        if my_cards[0].value != my_cards[1].value:
-            error("A two card play must be a pair!")
-            return 2
-        elif len(last_cards) == 0 or my_cards[1].number > last_cards[1].number:
-            return 0
-        else:
-            error("You must play a higher pair than the previous play!")
-            return 3
-    elif len(my_cards) == 3:
-        if not (my_cards[0].value == my_cards[1].value == my_cards[2].value):
-            error("A three card play must be a three of a kind!")
-            return 4
-        elif len(last_cards) == 0 or my_cards[2].number > last_cards[2].number:
-            return 0
-        else:
-            error("You must play a higher three of a kind than the previous play!")
-            return 5
-    elif len(my_cards) == 4:
-        error("There is no valid four card play, a four of a kind must be played with a kicker!")
-        return 6
-    elif len(my_cards) == 5:
-        if rank(my_cards) < rank(last_cards):
-            if rank(my_cards) == -1:
-                error("Invalid hand, try again!")
-                return 7
-            else:
-                error("You need to play a stronger hand!")
-                return 8
-        if rank(my_cards) > rank(last_cards):
-            return 0
-        if rank(my_cards) == rank(last_cards):
-            if rank(my_cards) == 2 or rank(my_cards) == 5:
-                if my_cards[0].suit > last_cards[0].suit:
-                    return 0
-                elif my_cards[0].suit < last_cards[0].suit:
-                    error("You need to play a higher suit!")
-                    return 9
-            if my_cards[4].number > last_cards[4].number:
-                return 0
-            else:
-                error("You need to play a better hand!")
-                return 10
-
-
 def quantity_checker(my_cards, cards):
     if len(my_cards) == 0 or len(cards) == 0:
         return 0
@@ -207,7 +121,7 @@ def play(some_cards, hand, cards):
         error("You must include the blue 3 in your play")
         return 1
     else:
-        if quantity_checker(some_cards, cards) == 0 and value_checker(some_cards, cards) == 0:
+        if quantity_checker(some_cards, cards) == 0 and CardList(some_cards).is_stronger_than(CardList(cards)):
             display_cards(some_cards, width/2 - 2.5*card_width, height/2 - 0.5*card_height)
             return 0
         else:
