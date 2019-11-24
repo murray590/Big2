@@ -11,6 +11,11 @@ class CardList:
         if self.cards:
             self.kicker = self.cards[2] if self.type in {Hand.FULL_HOUSE, Hand.QUADS} else self.cards[-1]
 
+    def is_valid_play(self, hand, cards):
+        if any(card.number == 0 for card in hand) and not any(card.number == 0 for card in self.cards):
+            return "You must include the blue 3 in your play"
+        return self.is_valid_quantity(cards) and self.is_stronger_than(cards)
+
     def is_valid_quantity(self, cards):
         if self.length == 0 or cards.length == 0:
             return True

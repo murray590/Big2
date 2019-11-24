@@ -36,20 +36,18 @@ def count_n_tuples(hand, n):
 
 class ComputerAlex(BaseComputer):
     @staticmethod
-    def choose_cards(last_cards, hand):
+    def choose_cards(last_card_list, hand):
+        last_cards = last_card_list.cards
         num_hand = len(hand)
         num_played = len(last_cards)
         selected_cards = []
         if num_played == 0:
             selected_cards.append(hand[0])
-            return selected_cards
         elif num_played > 3:
-            return selected_cards
+            pass
         else:
             for i in range(0, num_hand - num_played + 1):
                 selected_cards = hand[i:i+num_played]
-                if play(selected_cards, hand, last_cards) == 0:
-                    return selected_cards
-                else:
+                if play(selected_cards, hand, last_cards) != 0:
                     selected_cards = []
-        return selected_cards
+        return CardList(selected_cards)

@@ -1,7 +1,10 @@
+from core.card_list import CardList
+
+
 class Player:
     def __init__(self, name, computer):
         self.hand = []
-        self.last_played_cards = []
+        self.last_played_cards = CardList([])
         self.name = name
         self.computer = computer
 
