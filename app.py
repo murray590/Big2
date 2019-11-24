@@ -1,10 +1,10 @@
 import pygame
 import time
 
-from player import Player
-from card_list import CardList
-from computer_alex import ComputerAlex
-from dealer import Dealer
+from core.player import Player
+from core.card_list import CardList
+from computers.computer_alex import ComputerAlex
+from core.dealer import Dealer
 from config import CONFIG
 
 

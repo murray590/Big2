@@ -1,4 +1,4 @@
-from hand import Hand
+from core.hand import Hand
 # from card import Card
 
 

@@ -1,4 +1,6 @@
-from card_list import CardList
+from core.card_list import CardList
+from computers.base_computer import BaseComputer
+
 
 def play(some_cards, hand, cards):
     if any(card.number == 0 for card in hand) and not any(card.number == 0 for card in some_cards):
@@ -32,7 +34,7 @@ def count_n_tuples(hand, n):
     return len(ls)
 
 
-class ComputerAlex:
+class ComputerAlex(BaseComputer):
     @staticmethod
     def choose_cards(last_cards, hand):
         num_hand = len(hand)

@@ -1,6 +1,6 @@
 import random
 
-from card import Card
+from core.card import Card
 
 
 class Dealer:
