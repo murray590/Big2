@@ -68,4 +68,5 @@ class App:
         self.printer.message(f"Player {current_player.name} is the winner!")
 
 
-App([Player("A", AlexBot()), Player("B", AlexBot())])
+if __name__ == "__main__":
+    App([Player("A", AlexBot()), Player("B", AlexBot())])
