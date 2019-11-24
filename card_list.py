@@ -11,6 +11,16 @@ class CardList:
         if self.cards:
             self.kicker = self.cards[2] if self.type in {Hand.FULL_HOUSE, Hand.QUADS} else self.cards[-1]
 
+    def is_valid_quantity(self, cards):
+        if self.length == 0 or cards.length == 0:
+            return True
+        elif self.length > 5:
+            print('You must select at most 5 cards!')
+            return False
+        elif self.length != cards.length:
+            print('You must select the same number of cards as the previous play!')
+        return True
+
     def is_stronger_than(self, cards):
         if self.type == cards.type:
             if self.type == Hand.FLUSH:
@@ -70,7 +80,6 @@ class CardList:
             suits.append(card.suit)
         return suits
 
-#
 # hand1 = CardList([Card(0), Card(4), Card(8), Card(12), Card(16)])
 # hand2 = CardList([Card(35), Card(39), Card(43), Card(47), Card(51)])
 #
