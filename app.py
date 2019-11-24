@@ -54,7 +54,7 @@ class App:
                     player.last_played_cards.type == Hand.PASS
                     for player in current_player.opponents(self.players)
                 )
-                and current_player.last_played_cards != Hand.PASS
+                and current_player.last_played_cards.type != Hand.PASS
             ):
                 cards = CardList([])
             current_player.last_played_cards = self.turn(current_player, cards)
