@@ -2,8 +2,8 @@ import pygame
 import time
 from enum import Enum
 
-from core.card_list import CardList
-from core.printer import Printer
+from outputters.outputter import Outputter
+from outputters.printer import Printer
 
 
 class Colour(Enum):
@@ -16,7 +16,7 @@ class Colour(Enum):
     GREY = (180, 180, 180)
 
 
-class Graphics(Printer):
+class Graphics(Outputter):
     def __init__(self, width, height):
         pygame.init()
         pygame.display.set_caption("Big2")
@@ -75,7 +75,7 @@ class Graphics(Printer):
         words = basic_font.render(text, True, colour, background)
         self.screen.blit(words, location)
 
-    def repaint(self, player, cards):
+    def display_player(self, player, cards):
         self.screen.fill(Colour.WHITE.value)
         pygame.draw.ellipse(
             self.screen,
@@ -119,7 +119,7 @@ class Graphics(Printer):
             self.display_single_card(cards[i], left + i * self.card_width, top)
         pygame.display.update()
 
-    def message(self, message):
+    def display_message(self, message):
         self.display_text(
             message,
             30,

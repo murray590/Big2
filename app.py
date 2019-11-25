@@ -1,12 +1,12 @@
 import time
 
-from core.card import Card
+# from core.card import Card
 from core.card_list import CardList
 from core.hand import Hand
 from core.player import Player
 from core.dealer import Dealer
-from core.graphics import Graphics
-from core.printer import Printer
+from outputters.graphics import Graphics
+from outputters.printer import Printer
 from bots.alex_bot import AlexBot
 
 
@@ -22,7 +22,7 @@ class App:
 
     def turn(self, player, last_played_cards):
         while True:
-            self.printer.repaint(player, last_played_cards.cards)
+            self.printer.display_player(player, last_played_cards.cards)
             self.printer.display_cards(
                 player.hand, self.printer.width / 32, 6 * self.printer.height / 7
             )
@@ -64,9 +64,9 @@ class App:
             if len(current_player.hand) > 0:
                 current_player = current_player.next_player(self.players)
             else:
-                self.printer.repaint(current_player, cards.cards)
+                self.printer.display_player(current_player, cards.cards)
                 break
-        self.printer.message(f"Player {current_player.name}, wielding {current_player.bot.name}, is the winner!")
+        self.printer.display_message(f"Player {current_player.name}, wielding {current_player.bot.name}, is the winner!")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import math
 
-from core.graphics import Colour
+from outputters.graphics import Colour
 
 
 class Card:
