@@ -2,43 +2,10 @@ from core.card_list import CardList
 from bots.base_bot import BaseBot
 
 
-def play(some_cards, hand, cards):
-    if any(card.number == 0 for card in hand) and not any(
-        card.number == 0 for card in some_cards
-    ):
-        return 1
-    else:
-        if quantity_checker(some_cards, cards) == 0 and CardList(
-            some_cards
-        ).is_stronger_than(CardList(cards)):
-            return 0
-        else:
-            return 2
-
-
-def quantity_checker(my_cards, cards):
-    if len(my_cards) == 0 or len(cards) == 0:
-        return 0
-    elif len(my_cards) > 5:
-        return 1
-    elif len(my_cards) != len(cards):
-        return 2
-    else:
-        return 0
-
-
-def count_n_tuples(hand, n):
-    values = []
-    for card in hand:
-        values.append(card.value)
-    ls = []
-    for card in values:
-        if values.count(card) == n and card not in ls:
-            ls.append(card)
-    return len(ls)
-
-
 class AlexBot(BaseBot):
+    def __init__(self):
+        self.name = "AlexBot"
+
     @staticmethod
     def choose_cards(last_card_list, hand):
         num_hand = len(hand)
@@ -53,3 +20,16 @@ class AlexBot(BaseBot):
                 if CardList(selected_cards).is_valid_play(hand, last_card_list):
                     return selected_cards
             return []
+
+    @staticmethod
+    def is_there_a_flush(hand):
+        suits = [card.suit for card in hand]
+        suit_counts = [suits.count(i) for i in range(0, 4)]
+        print(suit_counts)
+        return any(count >= 5 for count in suit_counts)
+
+    @staticmethod
+    def count_n_tuples(hand, n):
+        values = [card.value for card in hand]
+        ls = {value for value in values if values.count(value) == n}
+        return len(ls)

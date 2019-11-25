@@ -1,5 +1,6 @@
 import time
 
+from core.card import Card
 from core.card_list import CardList
 from core.hand import Hand
 from core.player import Player
@@ -14,7 +15,7 @@ class App:
         self.players = players
         self.printer = (
             Printer()
-            if all(hasattr(player, "computer") for player in self.players)
+            if all(hasattr(player, "bot") for player in self.players)
             else Graphics(800, 560)
         )
         self.game()
@@ -27,8 +28,8 @@ class App:
             )
             time.sleep(1)
             chosen_cards = (
-                player.computer.choose_cards(last_played_cards, player.hand)
-                if hasattr(player, "computer")
+                player.bot.choose_cards(last_played_cards, player.hand)
+                if hasattr(player, "bot")
                 else self.printer.choose_cards(player.hand)
             )
             candidate_cards = CardList(chosen_cards)
@@ -65,8 +66,12 @@ class App:
             else:
                 self.printer.repaint(current_player, cards.cards)
                 break
-        self.printer.message(f"Player {current_player.name} is the winner!")
+        self.printer.message(f"Player {current_player.name}, wielding {current_player.bot.name}, is the winner!")
 
 
 if __name__ == "__main__":
     App([Player("A", AlexBot()), Player("B", AlexBot())])
+    # a = AlexBot()
+    # hand = [Card(i) for i in range(0, 18)]
+    # print(hand)
+    # print(a.is_there_a_flush(hand))
