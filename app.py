@@ -1,6 +1,7 @@
 import time
 
-# from core.card import Card
+from core.card import Card
+from bots.stupid_bot import StupidBot
 from core.card_list import CardList
 from core.hand import Hand
 from core.player import Player
@@ -13,31 +14,31 @@ from bots.alex_bot import AlexBot
 class App:
     def __init__(self, players):
         self.players = players
-        self.printer = (
+        self.outputter = (
             Printer()
-            if all(hasattr(player, "bot") for player in self.players)
+            if all(player.bot is not None for player in self.players)
             else Graphics(800, 560)
         )
         self.game()
 
     def turn(self, player, last_played_cards):
         while True:
-            self.printer.display_player(player, last_played_cards.cards)
-            self.printer.display_cards(
-                player.hand, self.printer.width / 32, 6 * self.printer.height / 7
+            self.outputter.display_player(player, last_played_cards.cards)
+            self.outputter.display_cards(
+                player.hand, self.outputter.width / 32, 6 * self.outputter.height / 7
             )
             time.sleep(1)
             chosen_cards = (
                 player.bot.choose_cards(last_played_cards, player.hand)
-                if hasattr(player, "bot")
-                else self.printer.choose_cards(player.hand)
+                if player.bot is not None
+                else self.outputter.choose_cards(player.hand)
             )
             candidate_cards = CardList(chosen_cards)
             if candidate_cards.is_valid_play(player.hand, last_played_cards):
-                self.printer.display_cards(
+                self.outputter.display_cards(
                     candidate_cards.cards,
-                    self.printer.width / 2 - 2.5 * self.printer.card_width,
-                    self.printer.height / 2 - 0.5 * self.printer.card_height,
+                    self.outputter.width / 2 - 2.5 * self.outputter.card_width,
+                    self.outputter.height / 2 - 0.5 * self.outputter.card_height,
                 )
                 for card in candidate_cards.cards:
                     player.hand.remove(card)
@@ -64,14 +65,15 @@ class App:
             if len(current_player.hand) > 0:
                 current_player = current_player.next_player(self.players)
             else:
-                self.printer.display_player(current_player, cards.cards)
+                self.outputter.display_player(current_player, cards.cards)
                 break
-        self.printer.display_message(f"Player {current_player.name}, wielding {current_player.bot.name}, is the winner!")
+        self.outputter.display_message(f"Player {current_player.name}, wielding {current_player.bot.name}, is the winner!")
 
 
 if __name__ == "__main__":
-    App([Player("A", AlexBot()), Player("B", AlexBot())])
-    # a = AlexBot()
-    # hand = [Card(i) for i in range(0, 18)]
+    App([Player("A", StupidBot()), Player("B", AlexBot())])
+    #a = AlexBot()
+    #hand = [Card(i) for i in range(0, 18)]
+    #print(a.return_flushes(hand))
     # print(hand)
     # print(a.is_there_a_flush(hand))
