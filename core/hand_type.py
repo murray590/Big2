@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Hand(Enum):
+class HandType(Enum):
     INVALID = 1
     PASS = 2
     SINGLE = 3

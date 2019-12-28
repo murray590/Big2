@@ -1,6 +1,6 @@
 from core.card_list import CardList
 from bots.base_bot import BaseBot
-from bots import utils
+from bots import hand_analyser
 
 
 class AlexBot(BaseBot):
@@ -13,7 +13,7 @@ class AlexBot(BaseBot):
         if num_played == 0:
             return [hand[0]]
         elif num_played > 3:
-            flushes = utils.return_flushes(hand)
+            flushes = hand.return_flushes(hand)
             return flushes[0][0:5] if flushes else []
         else:
             for i in range(0, num_hand - num_played + 1):

@@ -3,7 +3,6 @@ import time
 from enum import Enum
 
 from outputters.outputter import Outputter
-from outputters.printer import Printer
 
 
 class Colour(Enum):

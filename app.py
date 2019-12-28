@@ -3,12 +3,13 @@ import time
 from core.card import Card
 from bots.stupid_bot import StupidBot
 from core.card_list import CardList
-from core.hand import Hand
+from core.hand_type import HandType
 from core.player import Player
 from core.dealer import Dealer
 from outputters.graphics import Graphics
 from outputters.printer import Printer
 from bots.alex_bot import AlexBot
+from bots.hand_analyser import HandAnalyser
 
 
 class App:
@@ -53,14 +54,14 @@ class App:
         while True:
             if (
                 all(
-                    player.last_played_cards.type == Hand.PASS
+                    player.last_played_cards.type == HandType.PASS
                     for player in current_player.opponents(self.players)
                 )
-                and current_player.last_played_cards.type != Hand.PASS
+                and current_player.last_played_cards.type != HandType.PASS
             ):
                 cards = CardList([])
             current_player.last_played_cards = self.turn(current_player, cards)
-            if current_player.last_played_cards.type != Hand.PASS:
+            if current_player.last_played_cards.type != HandType.PASS:
                 cards = current_player.last_played_cards
             if len(current_player.hand) > 0:
                 current_player = current_player.next_player(self.players)
@@ -71,9 +72,9 @@ class App:
 
 
 if __name__ == "__main__":
-    App([Player("A", StupidBot()), Player("B", AlexBot())])
-    #a = AlexBot()
-    #hand = [Card(i) for i in range(0, 18)]
-    #print(a.return_flushes(hand))
-    # print(hand)
-    # print(a.is_there_a_flush(hand))
+    # App([Player("A", StupidBot()), Player("B", AlexBot())])
+    dealer = Dealer([Player("A", None), Player("B", None)])
+    dealer.deal()
+    print(HandAnalyser(dealer.players[0].hand).find_possible_plays(CardList([])))
+    #print(HandAnalyser([Card(i) for i in range(0, 18)]).find_possible_plays(CardList([])))
+    print(dealer.players[0].hand)
